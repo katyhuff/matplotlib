@@ -2,9 +2,18 @@ import os
 
 import matplotlib as mpl
 from matplotlib.tests import assert_str_equal
+from StringIO import StringIO
 
-templaterc = os.path.join(os.path.dirname(__file__), 'test_rcsetup.rc')
+matplotlibrc = os.path.join(os.path.dirname(__file__), 'matplotlibrc.template')
+templaterc = os.path.join(os.path.dirname(__file__), '../test_rcsetup.rc')
 deprecated = ['svg.embed_char_paths', 'savefig.extension']
+
+rc_file = StringIO()
+f = open(matplotlibrc)
+for line in f :
+    modified = line.replace("^#([^ ])", "\1")
+    if modified.count("datapath") == 0 : 
+        rc_file.write(modified)
 
 def test_defaults():
     # the default values should be successfully set by this class
@@ -16,7 +25,7 @@ def test_defaults():
 
 def test_template():
     # the current matplotlibrc.template should validate successfully
-    with mpl.rc_context(fname=templaterc):
+    with mpl.rc_context(fname=rc_file):
         for k, v in mpl.rcsetup.defaultParams.iteritems():
             if k not in deprecated:
                 if isinstance(v[0], basestring):

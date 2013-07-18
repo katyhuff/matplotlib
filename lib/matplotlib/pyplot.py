@@ -262,13 +262,15 @@ def xkcd(scale=1, length=100, randomness=2):
 
     Parameters
     ----------
-    scale: float, optional
+    scale : float, optional
         The amplitude of the wiggle perpendicular to the source line.
-    length: float, optional
+    length : float, optional
         The length of the wiggle along the line.
-    randomness: float, optional
+    randomness : float, optional
         The scale factor by which the length is shrunken or expanded.
 
+    Notes
+    -----
     This function works by a number of rcParams, so it will probably
     override others you have set before.
 
@@ -359,8 +361,8 @@ def figure(num=None,  # autoincrement if None, else integer from 1-N
         pylab interface. Additional kwargs will be passed to the figure init
         function.
 
-    Note
-    ----
+    Notes
+    -----
     If you are creating many figures, make sure you explicitly call "close"
     on the figures you are not using, because this will enable pylab
     to properly clean up the memory.
@@ -3211,7 +3213,7 @@ def step(x, y, *args, **kwargs):
 @_autogen_docstring(Axes.streamplot)
 def streamplot(x, y, u, v, density=1, linewidth=None, color=None, cmap=None,
                norm=None, arrowsize=1, arrowstyle='-|>', minlength=0.1,
-               transform=None, hold=None):
+               transform=None, hold=None, zorder=1):
     ax = gca()
     # allow callers to override the hold state by passing hold=True|False
     washold = ax.ishold()
@@ -3222,7 +3224,8 @@ def streamplot(x, y, u, v, density=1, linewidth=None, color=None, cmap=None,
         ret = ax.streamplot(x, y, u, v, density=density, linewidth=linewidth,
                             color=color, cmap=cmap, norm=norm,
                             arrowsize=arrowsize, arrowstyle=arrowstyle,
-                            minlength=minlength, transform=transform)
+                            minlength=minlength, transform=transform,
+                            zorder=zorder)
         draw_if_interactive()
     finally:
         ax.hold(washold)

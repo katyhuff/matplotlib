@@ -361,6 +361,15 @@ class SetupPackage(object):
         """
         return []
 
+    def get_namespace_packages(self):
+        """
+        Get a list of namespace package names to add to the configuration.
+        These are added to the `namespace_packages` list passed to
+        `distutils.setup`.
+        """
+        return []
+
+
     def get_py_modules(self):
         """
         Get a list of top-level modules to add to the configuration.
@@ -575,6 +584,9 @@ class Toolkits(OptionalPackage):
             'mpl_toolkits.axes_grid1',
             'mpl_toolkits.axisartist',
             ]
+
+    def get_namespace_packages(self):
+        return ['mpl_toolkits']
 
 
 class Tests(OptionalPackage):
@@ -1463,7 +1475,7 @@ class BackendGtk3Agg(OptionalBackendPackage):
             raise CheckFailed("Can't build with Travis")
 
         if sys.version_info[0] >= 3:
-            return "gtk3agg backend does not work on Python 3"
+            raise CheckFailed("gtk3agg backend does not work on Python 3")
 
         # This check needs to be performed out-of-process, because
         # importing gi and then importing regular old pygtk afterward

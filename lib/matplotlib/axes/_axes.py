@@ -129,8 +129,7 @@ class Axes(_AxesBase):
         default = {
             'fontsize': rcParams['axes.titlesize'],
             'verticalalignment': 'baseline',
-            'horizontalalignment': loc.lower()
-            }
+            'horizontalalignment': loc.lower()}
         title.set_text(label)
         title.update(default)
         if fontdict is not None:
@@ -455,7 +454,7 @@ class Axes(_AxesBase):
         """
         Add text to the axes.
 
-        Add text in string *s* to axis at location *x*, *y*, data
+        Add text in string `s` to axis at location `x`, `y`, data
         coordinates.
 
         Parameters
@@ -496,7 +495,7 @@ class Axes(_AxesBase):
             ...      transform=ax.transAxes)
 
         You can put a rectangular box around the text instance (e.g., to
-        set a background color) by using the keyword *bbox*.  *bbox* is
+        set a background color) by using the keyword `bbox`.  `bbox` is
         a dictionary of `~matplotlib.patches.Rectangle`
         properties.  For example::
 
@@ -506,8 +505,7 @@ class Axes(_AxesBase):
             'verticalalignment': 'baseline',
             'horizontalalignment': 'left',
             'transform': self.transData,
-            'clip_on': False
-            }
+            'clip_on': False}
 
         # At some point if we feel confident that TextWithDash
         # is robust as a drop-in replacement for Text and that
@@ -539,14 +537,46 @@ class Axes(_AxesBase):
         Create an annotation: a piece of text referring to a data
         point.
 
-        Call signature::
+        Parameters
+        ----------
+        s : string
+            label
 
-          annotate(s, xy, xytext=None, xycoords='data',
-                   textcoords='data', arrowprops=None, **kwargs)
+        xy : (x, y)
+            position of element to annotate
 
-        Keyword arguments:
+        xytext : (x, y) , optional, default: None
+            position of the label `s`
+
+        xycoords : string, optional, default: "data"
+            string that indicates what tye of coordinates `xy` is. Examples:
+            "figure points", "figure pixels", "figure fraction", "axes
+            points", .... See `matplotlib.text.Annotation` for more details.
+
+        textcoords : string, optional, default: None
+            string that indicates what type of coordinates `text` is. Examples:
+            "figure points", "figure pixels", "figure fraction", "axes
+            points", .... See `matplotlib.text.Annotation` for more details.
+
+        arrowprops : `matplotlib.lines.Line2D` properties, optional, default: None
+            Dictionnary of line properties for the arrow that connects the
+            annotation to the point. If the dictionnary has a key
+            `arrowstyle`, a `FancyArrowPatch` instance is created and drawn.
+            See `matplotlib.text.Annotation` for more details on valid
+            options.
+
+        Returns
+        -------
+        a : `~matplotlib.text.Annotation`
+
+
+        Other parameters
+        -----------------
 
         %(Annotation)s
+
+        Examples
+        --------
 
         .. plot:: mpl_examples/pylab_examples/annotation_demo2.py
         """
@@ -566,31 +596,40 @@ class Axes(_AxesBase):
         """
         Add a horizontal line across the axis.
 
-        Call signature::
+        Parameters
+        ----------
+        y : scalar, optional, default: 0
+            y position in data coordinates of the horizontal line.
 
-          axhline(y=0, xmin=0, xmax=1, **kwargs)
+        xmin : scalar, optional, default: 0
+            Should be between 0 and 1, 0 being the far left of the plot, 1 the
+            far right of the plot.
 
-        Draw a horizontal line at *y* from *xmin* to *xmax*.  With the
-        default values of *xmin* = 0 and *xmax* = 1, this line will
-        always span the horizontal extent of the axes, regardless of
-        the xlim settings, even if you change them, e.g., with the
-        :meth:`set_xlim` command.  That is, the horizontal extent is
-        in axes coords: 0=left, 0.5=middle, 1.0=right but the *y*
-        location is in data coordinates.
+        xmax : scalar, optional, default: 1
+            Should be between 0 and 1, 0 being the far left of the plot, 1 the
+            far right of the plot.
 
-        Return value is the :class:`~matplotlib.lines.Line2D`
-        instance.  kwargs are the same as kwargs to plot, and can be
+        Returns
+        -------
+        `~matplotlib.lines.Line2D`
+
+        Notes
+        -----
+        kwargs are the same as kwargs to plot, and can be
         used to control the line properties.  e.g.,
 
-        * draw a thick red hline at *y* = 0 that spans the xrange::
+        Examples
+        --------
+
+        * draw a thick red hline at 'y' = 0 that spans the xrange::
 
             >>> axhline(linewidth=4, color='r')
 
-        * draw a default hline at *y* = 1 that spans the xrange::
+        * draw a default hline at 'y' = 1 that spans the xrange::
 
             >>> axhline(y=1)
 
-        * draw a default hline at *y* = .5 that spans the the middle half of
+        * draw a default hline at 'y' = .5 that spans the the middle half of
           the xrange::
 
             >>> axhline(y=.5, xmin=0.25, xmax=0.75)
@@ -600,10 +639,9 @@ class Axes(_AxesBase):
 
         %(Line2D)s
 
-        .. seealso::
-
-            :meth:`axhspan`
-                for example plot and source code
+        See also
+        --------
+        `axhspan` for example plot and source code
         """
 
         if "transform" in kwargs:
@@ -630,22 +668,26 @@ class Axes(_AxesBase):
         """
         Add a vertical line across the axes.
 
-        Call signature::
+        Parameters
+        ----------
+        x : scalar, optional, default: 0
+            y position in data coordinates of the vertical line.
 
-          axvline(x=0, ymin=0, ymax=1, **kwargs)
+        ymin : scalar, optional, default: 0
+            Should be between 0 and 1, 0 being the far left of the plot, 1 the
+            far right of the plot.
 
-        Draw a vertical line at *x* from *ymin* to *ymax*.  With the
-        default values of *ymin* = 0 and *ymax* = 1, this line will
-        always span the vertical extent of the axes, regardless of the
-        ylim settings, even if you change them, e.g., with the
-        :meth:`set_ylim` command.  That is, the vertical extent is in
-        axes coords: 0=bottom, 0.5=middle, 1.0=top but the *x* location
-        is in data coordinates.
+        ymax : scalar, optional, default: 1
+            Should be between 0 and 1, 0 being the far left of the plot, 1 the
+            far right of the plot.
 
-        Return value is the :class:`~matplotlib.lines.Line2D`
-        instance.  kwargs are the same as kwargs to plot, and can be
-        used to control the line properties.  e.g.,
+        Returns
+        -------
+        `~matplotlib.lines.Line2D`
 
+
+        Examples
+        ---------
         * draw a thick red vline at *x* = 0 that spans the yrange::
 
             >>> axvline(linewidth=4, color='r')
@@ -664,10 +706,10 @@ class Axes(_AxesBase):
 
         %(Line2D)s
 
-        .. seealso::
+        See also
+        --------
 
-            :meth:`axhspan`
-                for example plot and source code
+        `axhspan` for example plot and source code
         """
 
         if "transform" in kwargs:
@@ -712,7 +754,7 @@ class Axes(_AxesBase):
         Return value is a :class:`matplotlib.patches.Polygon`
         instance.
 
-        Examples:
+       Examples:
 
         * draw a gray rectangle from *y* = 0.25-0.75 that spans the
           horizontal extent of the axes::
@@ -803,15 +845,13 @@ class Axes(_AxesBase):
 
     @docstring.dedent
     def hlines(self, y, xmin, xmax, colors='k', linestyles='solid',
-                     label='', **kwargs):
+               label='', **kwargs):
         """
-        Plot horizontal lines.
-
         Plot horizontal lines at each `y` from `xmin` to `xmax`.
 
         Parameters
         ----------
-        y : scalar or 1D array_like
+        y : scalar or sequence of scalar
             y-indexes where to plot the lines.
 
         xmin, xmax : scalar or 1D array_like
@@ -892,7 +932,7 @@ class Axes(_AxesBase):
 
     @docstring.dedent_interpd
     def vlines(self, x, ymin, ymax, colors='k', linestyles='solid',
-                     label='', **kwargs):
+               label='', **kwargs):
         """
         Plot vertical lines.
 
@@ -1531,63 +1571,61 @@ class Axes(_AxesBase):
     @docstring.dedent_interpd
     def acorr(self, x, **kwargs):
         """
-        Plot the autocorrelation of *x*.
+        Plot the autocorrelation of `x`.
 
-        Call signature::
+        Parameters
+        ----------
 
-            acorr(x, normed=True, detrend=mlab.detrend_none, usevlines=True,
-                  maxlags=10, **kwargs)
+        x : sequence of scalar
 
-        If *normed* = *True*, normalize the data by the autocorrelation at
-        0-th lag.  *x* is detrended by the *detrend* callable (default no
-        normalization).
+        hold : boolean, optional, default: True
 
-        Data are plotted as ``plot(lags, c, **kwargs)``
+        detrend : callable, optional, default: `mlab.detrend_none`
+            x is detrended by the `detrend` callable. Default is no
+            normalization.
 
-        Return value is a tuple (*lags*, *c*, *line*) where:
+        normed : boolean, optional, default: True
+            if True, normalize the data by the autocorrelation at the 0-th
+            lag.
 
-          - *lags* are a length 2*maxlags+1 lag vector
+        usevlines : boolean, optional, default: True
+            if True, Axes.vlines is used to plot the vertical lines from the
+            origin to the acorr. Otherwise, Axes.plot is used.
 
-          - *c* is the 2*maxlags+1 auto correlation vector
+        maxlags : integer, optional, default: 10
+            number of lags to show. If None, will return all 2 * len(x) - 1
+            lags.
 
-          - *line* is a :class:`~matplotlib.lines.Line2D` instance
-            returned by :meth:`plot`
+        Returns
+        -------
+        (lags, c, line, b) : where:
 
-        The default *linestyle* is None and the default *marker* is
-        ``'o'``, though these can be overridden with keyword args.
-        The cross correlation is performed with
-        :func:`numpy.correlate` with *mode* = 2.
+          - `lags` are a length 2`maxlags+1 lag vector.
+          - `c` is the 2`maxlags+1 auto correlation vectorI
+          - `line` is a `~matplotlib.lines.Line2D` instance returned by
+            `plot`.
+          - `b` is the x-axis.
 
-        If *usevlines* is *True*, :meth:`~matplotlib.axes.Axes.vlines`
-        rather than :meth:`~matplotlib.axes.Axes.plot` is used to draw
-        vertical lines from the origin to the acorr.  Otherwise, the
-        plot style is determined by the kwargs, which are
-        :class:`~matplotlib.lines.Line2D` properties.
+        Other parameters
+        -----------------
+        linestyle : `~matplotlib.lines.Line2D` prop, optional, default: None
+            Only used if usevlines is False.
 
-        *maxlags* is a positive integer detailing the number of lags
-        to show.  The default value of *None* will return all
-        ``(2*len(x)-1)`` lags.
+        marker : string, optional, default: 'o'
 
-        The return value is a tuple (*lags*, *c*, *linecol*, *b*)
-        where
+        Notes
+        -----
+        The cross correlation is performed with :func:`numpy.correlate` with
+        `mode` = 2.
 
-          - *linecol* is the
-            :class:`~matplotlib.collections.LineCollection`
+        Examples
+        --------
 
-          - *b* is the *x*-axis.
-
-        .. seealso::
-
-            :meth:`~matplotlib.axes.Axes.plot` or
-            :meth:`~matplotlib.axes.Axes.vlines`
-            For documentation on valid kwargs.
-
-        **Example:**
-
-        :func:`~matplotlib.pyplot.xcorr` is top graph, and
-        :func:`~matplotlib.pyplot.acorr` is bottom graph.
+        `~matplotlib.pyplot.xcorr` is top graph, and
+        `~matplotlib.pyplot.acorr` is bottom graph.
 
         .. plot:: mpl_examples/pylab_examples/xcorr_demo.py
+
         """
         return self.xcorr(x, x, **kwargs)
 
@@ -1597,54 +1635,52 @@ class Axes(_AxesBase):
         """
         Plot the cross correlation between *x* and *y*.
 
-        Call signature::
+        Parameters
+        ----------
 
-            xcorr(self, x, y, normed=True, detrend=mlab.detrend_none,
-              usevlines=True, maxlags=10, **kwargs)
+        x : sequence of scalars of length n
 
-        If *normed* = *True*, normalize the data by the cross
-        correlation at 0-th lag.  *x* and y are detrended by the
-        *detrend* callable (default no normalization).  *x* and *y*
-        must be equal length.
+        y : sequence of scalars of length n
 
-        Data are plotted as ``plot(lags, c, **kwargs)``
+        hold : boolean, optional, default: True
 
-        Return value is a tuple (*lags*, *c*, *line*) where:
+        detrend : callable, optional, default: `mlab.detrend_none`
+            x is detrended by the `detrend` callable. Default is no
+            normalization.
 
-          - *lags* are a length ``2*maxlags+1`` lag vector
+        normed : boolean, optional, default: True
+            if True, normalize the data by the autocorrelation at the 0-th
+            lag.
 
-          - *c* is the ``2*maxlags+1`` auto correlation vector
+        usevlines : boolean, optional, default: True
+            if True, Axes.vlines is used to plot the vertical lines from the
+            origin to the acorr. Otherwise, Axes.plot is used.
 
-          - *line* is a :class:`~matplotlib.lines.Line2D` instance
-             returned by :func:`~matplotlib.pyplot.plot`.
+        maxlags : integer, optional, default: 10
+            number of lags to show. If None, will return all 2 * len(x) - 1
+            lags.
 
-        The default *linestyle* is *None* and the default *marker* is
-        'o', though these can be overridden with keyword args.  The
-        cross correlation is performed with :func:`numpy.correlate`
-        with *mode* = 2.
+        Returns
+        -------
+        (lags, c, line, b) : where:
 
-        If *usevlines* is *True*:
+          - `lags` are a length 2`maxlags+1 lag vector.
+          - `c` is the 2`maxlags+1 auto correlation vectorI
+          - `line` is a `~matplotlib.lines.Line2D` instance returned by
+            `plot`.
+          - `b` is the x-axis (none, if plot is used).
 
-           :func:`~matplotlib.pyplot.vlines`
-           rather than :func:`~matplotlib.pyplot.plot` is used to draw
-           vertical lines from the origin to the xcorr.  Otherwise the
-           plotstyle is determined by the kwargs, which are
-           :class:`~matplotlib.lines.Line2D` properties.
+        Other parameters
+        -----------------
+        linestyle : `~matplotlib.lines.Line2D` prop, optional, default: None
+            Only used if usevlines is False.
 
-           The return value is a tuple (*lags*, *c*, *linecol*, *b*)
-           where *linecol* is the
-           :class:`matplotlib.collections.LineCollection` instance and
-           *b* is the *x*-axis.
+        marker : string, optional, default: 'o'
 
-        *maxlags* is a positive integer detailing the number of lags to show.
-        The default value of *None* will return all ``(2*len(x)-1)`` lags.
-
-        **Example:**
-
-        :func:`~matplotlib.pyplot.xcorr` is top graph, and
-        :func:`~matplotlib.pyplot.acorr` is bottom graph.
-
-        .. plot:: mpl_examples/pylab_examples/xcorr_demo.py
+        Notes
+        -----
+        The cross correlation is performed with :func:`numpy.correlate` with
+        `mode` = 2.
         """
 
         Nx = len(x)
@@ -1799,8 +1835,8 @@ class Axes(_AxesBase):
         --------
         barh: Plot a horizontal bar plot.
 
-        Example
-        -------
+        Examples
+        --------
 
         **Example:** A stacked bar chart.
 
@@ -2355,7 +2391,7 @@ class Axes(_AxesBase):
             y += expl * math.sin(thetam)
 
             w = mpatches.Wedge((x, y), radius, 360. * theta1, 360. * theta2,
-                      facecolor=colors[i % len(colors)])
+                               facecolor=colors[i % len(colors)])
             slices.append(w)
             self.add_patch(w)
             w.set_label(label)
@@ -2364,9 +2400,10 @@ class Axes(_AxesBase):
                 # make sure to add a shadow after the call to
                 # add_patch so the figure and transform props will be
                 # set
-                shad = mpatches.Shadow(w, -0.02, -0.02,
-                              #props={'facecolor':w.get_facecolor()}
-                              )
+                shad = mpatches.Shadow(
+                    w, -0.02, -0.02,
+                    #props={'facecolor':w.get_facecolor()}
+                    )
                 shad.set_zorder(0.9 * w.get_zorder())
                 shad.set_label('_nolegend_')
                 self.add_patch(shad)
@@ -3774,7 +3811,7 @@ class Axes(_AxesBase):
 
     def streamplot(self, x, y, u, v, density=1, linewidth=None, color=None,
                    cmap=None, norm=None, arrowsize=1, arrowstyle='-|>',
-                   minlength=0.1, transform=None):
+                   minlength=0.1, transform=None, zorder=1):
         if not self._hold:
             self.cla()
         stream_container = mstream.streamplot(self, x, y, u, v,
@@ -3786,7 +3823,8 @@ class Axes(_AxesBase):
                                               arrowsize=arrowsize,
                                               arrowstyle=arrowstyle,
                                               minlength=minlength,
-                                              transform=transform)
+                                              transform=transform,
+                                              zorder=zorder)
         return stream_container
     streamplot.__doc__ = mstream.streamplot.__doc__
 

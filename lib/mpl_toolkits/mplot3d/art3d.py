@@ -7,10 +7,15 @@
 Module containing 3D artist code and functions to convert 2D
 artists into 3D versions which can be added to an Axes3D.
 '''
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+
+import six
+from six.moves import zip
 
 from matplotlib import lines, text as mtext, path as mpath, colors as mcolors
 from matplotlib.collections import Collection, LineCollection, \
-        PolyCollection, PatchCollection
+        PolyCollection, PatchCollection, PathCollection
 from matplotlib.cm import ScalarMappable
 from matplotlib.patches import Patch
 from matplotlib.colors import Normalize
@@ -19,7 +24,7 @@ from matplotlib.cbook import iterable
 import warnings
 import numpy as np
 import math
-import proj3d
+from . import proj3d
 
 def norm_angle(a):
     """Return angle between -180 and +180"""
@@ -182,7 +187,7 @@ class Line3DCollection(LineCollection):
         xyslist = [
             proj3d.proj_trans_points(points, renderer.M) for points in
             self._segments3d]
-        segments_2d = [zip(xs, ys) for (xs, ys, zs) in xyslist]
+        segments_2d = [list(zip(xs, ys)) for (xs, ys, zs) in xyslist]
         LineCollection.set_segments(self, segments_2d)
 
         # FIXME
@@ -229,9 +234,9 @@ class Patch3D(Patch):
 
     def do_3d_projection(self, renderer):
         s = self._segment3d
-        xs, ys, zs = zip(*s)
+        xs, ys, zs = list(zip(*s))
         vxs, vys,vzs, vis = proj3d.proj_transform_clip(xs, ys, zs, renderer.M)
-        self._path2d = mpath.Path(zip(vxs, vys))
+        self._path2d = mpath.Path(list(zip(vxs, vys)))
         # FIXME: coloring
         self._facecolor2d = self._facecolor3d
         return min(vzs)
@@ -257,9 +262,9 @@ class PathPatch3D(Patch3D):
 
     def do_3d_projection(self, renderer):
         s = self._segment3d
-        xs, ys, zs = zip(*s)
+        xs, ys, zs = list(zip(*s))
         vxs, vys,vzs, vis = proj3d.proj_transform_clip(xs, ys, zs, renderer.M)
-        self._path2d = mpath.Path(zip(vxs, vys), self._code3d)
+        self._path2d = mpath.Path(list(zip(vxs, vys)), self._code3d)
         # FIXME: coloring
         self._facecolor2d = self._facecolor3d
         return min(vzs)
@@ -289,7 +294,7 @@ def pathpatch_2d_to_3d(pathpatch, z=0, zdir='z'):
     pathpatch.__class__ = PathPatch3D
     pathpatch.set_3d_properties(mpath, z, zdir)
 
-class Patch3DCollection(PatchCollection):
+class Collection3D(object):
     '''
     A collection of 3D patches.
     '''
@@ -323,7 +328,7 @@ class Patch3DCollection(PatchCollection):
         self.update_scalarmappable()
         offsets = self.get_offsets()
         if len(offsets) > 0:
-            xs, ys = zip(*offsets)
+            xs, ys = list(zip(*offsets))
         else:
             xs = []
             ys = []
@@ -338,7 +343,7 @@ class Patch3DCollection(PatchCollection):
         self._alpha = None
         self.set_facecolors(zalpha(self._facecolor3d, vzs))
         self.set_edgecolors(zalpha(self._edgecolor3d, vzs))
-        PatchCollection.set_offsets(self, zip(vxs, vys))
+        super(self.__class__, self).set_offsets(list(zip(vxs, vys)))
 
         if vzs.size > 0 :
             return min(vzs)
@@ -348,6 +353,15 @@ class Patch3DCollection(PatchCollection):
     def draw(self, renderer):
         self._old_draw(renderer)
 
+
+class Patch3DCollection(Collection3D, PatchCollection):
+    pass
+
+
+class Path3DCollection(Collection3D, PathCollection):
+    pass
+
+
 def patch_collection_2d_to_3d(col, zs=0, zdir='z'):
     """Convert a PatchCollection to a Patch3DCollection object."""
 
@@ -355,7 +369,10 @@ def patch_collection_2d_to_3d(col, zs=0, zdir='z'):
     # derived from PatchCollection. We need to use the right draw method.
     col._old_draw = col.draw
 
-    col.__class__ = Patch3DCollection
+    if isinstance(col, PathCollection):
+        col.__class__ = Path3DCollection
+    elif isinstance(col, PatchCollection):
+        col.__class__ = Patch3DCollection
     col.set_3d_properties(zs, zdir)
 
 class Poly3DCollection(PolyCollection):
@@ -421,7 +438,7 @@ class Poly3DCollection(PolyCollection):
             si = ei
 
         if len(segments3d) > 0 :
-            xs, ys, zs = zip(*points)
+            xs, ys, zs = list(zip(*points))
         else :
             # We need this so that we can skip the bad unpacking from zip()
             xs, ys, zs = [], [], []
@@ -474,11 +491,11 @@ class Poly3DCollection(PolyCollection):
 
         # if required sort by depth (furthest drawn first)
         if self._zsort:
-            z_segments_2d = [(self._zsortfunc(zs), zip(xs, ys), fc, ec) for
+            z_segments_2d = [(self._zsortfunc(zs), list(zip(xs, ys)), fc, ec) for
                     (xs, ys, zs), fc, ec in zip(xyzlist, cface, cedge)]
             z_segments_2d.sort(key=lambda x: x[0], reverse=True)
         else:
-            raise ValueError, "whoops"
+            raise ValueError("whoops")
 
         segments_2d = [s for z, s, fc, ec in z_segments_2d]
         PolyCollection.set_verts(self, segments_2d)
@@ -592,7 +609,7 @@ def get_colors(c, num):
     elif iscolor(c[0]):
         return [c[0]] * num
     else:
-        raise ValueError, 'unknown color format %s' % c
+        raise ValueError('unknown color format %s' % c)
 
 def zalpha(colors, zs):
     """Modify the alphas of the color list according to depth"""
@@ -606,4 +623,3 @@ def zalpha(colors, zs):
         sats = 1 - norm(zs) * 0.7
         colors = [(c[0], c[1], c[2], c[3] * s) for c, s in zip(colors, sats)]
     return colors
-

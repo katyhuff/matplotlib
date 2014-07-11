@@ -1,23 +1,27 @@
 """
 This is a python interface to Adobe Font Metrics Files.  Although a
-number of other python implementations exist (and may be more complete
-than mine) I decided not to go with them because either they were
-either
+number of other python implementations exist, and may be more complete
+than this, it was decided not to go with them because they were
+either:
 
   1) copyrighted or used a non-BSD compatible license
 
-  2) had too many dependencies and I wanted a free standing lib
+  2) had too many dependencies and a free standing lib was needed
 
-  3) Did more than I needed and it was easier to write my own than
-     figure out how to just get what I needed from theirs
+  3) Did more than needed and it was easier to write afresh rather than
+     figure out how to get just what was needed.
 
-It is pretty easy to use, and requires only built-in python libs::
+It is pretty easy to use, and requires only built-in python libs:
 
-    >>> from afm import AFM
-    >>> fh = open('ptmr8a.afm')
-    >>> afm = AFM(fh)
+    >>> from matplotlib import rcParams
+    >>> import os.path
+    >>> afm_fname = os.path.join(rcParams['datapath'],
+    ...                         'fonts', 'afm', 'ptmr8a.afm')
+    >>>
+    >>> from matplotlib.afm import AFM
+    >>> afm = AFM(open(afm_fname))
     >>> afm.string_width_height('What the heck?')
-    (6220.0, 683)
+    (6220.0, 694)
     >>> afm.get_fontname()
     'Times-Roman'
     >>> afm.get_kern_dist('A', 'f')
@@ -26,20 +30,19 @@ It is pretty easy to use, and requires only built-in python libs::
     -92.0
     >>> afm.get_bbox_char('!')
     [130, -9, 238, 676]
-    >>> afm.get_bbox_font()
-    [-168, -218, 1000, 898]
 
-
-AUTHOR:
-  John D. Hunter <jdh2358@gmail.com>
 """
 
-from __future__ import print_function
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+
+import six
+from six.moves import map
 
 import sys
 import os
 import re
-from _mathtext_data import uni2type1
+from ._mathtext_data import uni2type1
 
 #Convert string the a python type
 
@@ -54,7 +57,7 @@ def _to_int(x):
     return int(float(x))
 
 _to_float = float
-if sys.version_info[0] >= 3:
+if six.PY3:
     def _to_str(x):
         return x.decode('utf8')
 else:
@@ -202,7 +205,7 @@ def _parse_char_metrics(fh):
         name = vals[2].split()[1]
         name = name.decode('ascii')
         bbox = _to_list_of_floats(vals[3][2:])
-        bbox = map(int, bbox)
+        bbox = list(map(int, bbox))
         # Workaround: If the character name is 'Euro', give it the
         # corresponding character code, according to WinAnsiEncoding (see PDF
         # Reference).
@@ -401,7 +404,7 @@ class AFM(object):
         miny = 1e9
         maxy = 0
         left = 0
-        if not isinstance(s, unicode):
+        if not isinstance(s, six.text_type):
             s = s.decode('ascii')
         for c in s:
             if c == '\n':
@@ -550,13 +553,3 @@ class AFM(object):
         not specified in AFM file.
         """
         return self._header.get(b'StdVW', None)
-
-
-if __name__ == '__main__':
-    #pathname = '/usr/local/lib/R/afm/'
-    pathname = '/usr/local/share/fonts/afms/adobe'
-
-    for fname in os.listdir(pathname):
-        with open(os.path.join(pathname, fname)) as fh:
-            afm = AFM(fh)
-            w, h = afm.string_width_height('John Hunter is the Man!')

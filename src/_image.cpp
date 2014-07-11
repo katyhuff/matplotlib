@@ -202,10 +202,10 @@ Image::as_rgba_str(const Py::Tuple& args, const Py::Dict& kwargs)
     std::pair<agg::int8u*, bool> bufpair = _get_output_buffer();
 
     #if PY3K
-    Py::Object ret =  Py::asObject(Py_BuildValue("lly#", rowsOut, colsOut,
+    Py::Object ret =  Py::asObject(Py_BuildValue("nny#", rowsOut, colsOut,
                                    bufpair.first, colsOut * rowsOut * 4));
     #else
-    Py::Object ret =  Py::asObject(Py_BuildValue("lls#", rowsOut, colsOut,
+    Py::Object ret =  Py::asObject(Py_BuildValue("nns#", rowsOut, colsOut,
                                    bufpair.first, colsOut * rowsOut * 4));
     #endif
 
@@ -272,7 +272,7 @@ Image::color_conv(const Py::Tuple& args)
     }
 #endif
 
-    PyObject* o = Py_BuildValue("llN", rowsOut, colsOut, py_buffer);
+    PyObject* o = Py_BuildValue("nnN", rowsOut, colsOut, py_buffer);
     return Py::asObject(o);
 }
 
@@ -290,7 +290,7 @@ Image::buffer_rgba(const Py::Tuple& args)
 
     args.verify_length(0);
     int row_len = colsOut * 4;
-    PyObject* o = Py_BuildValue("lls#", rowsOut, colsOut,
+    PyObject* o = Py_BuildValue("nns#", rowsOut, colsOut,
                                 rbufOut, row_len * rowsOut);
     return Py::asObject(o);
 }
@@ -373,6 +373,12 @@ Image::resize(const Py::Tuple& args, const Py::Dict& kwargs)
 
     int numcols = Py::Int(args[0]);
     int numrows = Py::Int(args[1]);
+
+    if (numcols <= 0 || numrows <= 0)
+    {
+        throw Py::RuntimeError(
+        "Width and height must have positive values");
+    }
 
     colsOut = numcols;
     rowsOut = numrows;
@@ -991,7 +997,6 @@ _image_module::fromarray(const Py::Tuple& args)
     {
         throw Py::ValueError("Illegal array rank; must be rank; must 2 or 3");
     }
-    buffer -= NUMBYTES;
 
     return Py::asObject(imo);
 }
@@ -1099,7 +1104,6 @@ _image_module::fromarray2(const Py::Tuple& args)
     {
         throw Py::ValueError("Illegal array rank; must be rank; must 2 or 3");
     }
-    buffer -= NUMBYTES;
 
     return Py::asObject(imo);
 }
@@ -1681,7 +1685,6 @@ _image_module::pcolor(const Py::Tuple& args)
     unsigned char *inposition;
     size_t inrowsize(nx*4);
     size_t rowsize(cols*4);
-    rowstart = rowstarts;
     agg::int8u * position = buffer;
     agg::int8u * oldposition = NULL;
     start = reinterpret_cast<unsigned char*>(d->data);

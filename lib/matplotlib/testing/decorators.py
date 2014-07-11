@@ -1,19 +1,29 @@
-from __future__ import print_function
-from matplotlib.testing.noseclasses import KnownFailureTest, \
-     KnownFailureDidNotFailTest, ImageComparisonFailure
-import os, sys, shutil
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+
+import six
+
+import functools
+import os
+import sys
+import shutil
+import warnings
+import unittest
+
 import nose
-import matplotlib
+import numpy as np
+
 import matplotlib.tests
 import matplotlib.units
 from matplotlib import cbook
 from matplotlib import ticker
 from matplotlib import pyplot as plt
 from matplotlib import ft2font
-import numpy as np
+from matplotlib.testing.noseclasses import KnownFailureTest, \
+     KnownFailureDidNotFailTest, ImageComparisonFailure
 from matplotlib.testing.compare import comparable_formats, compare_images, \
      make_test_filename
-import warnings
+
 
 def knownfailureif(fail_condition, msg=None, known_exception_class=None ):
     """
@@ -54,6 +64,7 @@ def knownfailureif(fail_condition, msg=None, known_exception_class=None ):
         return nose.tools.make_decorator(f)(failer)
     return known_fail_decorator
 
+
 class CleanupTest(object):
     @classmethod
     def setup_class(cls):
@@ -67,27 +78,53 @@ class CleanupTest(object):
 
         matplotlib.units.registry.clear()
         matplotlib.units.registry.update(cls.original_units_registry)
-        warnings.resetwarnings() #reset any warning filters set in tests
+        warnings.resetwarnings()  # reset any warning filters set in tests
 
     def test(self):
         self._func()
 
+
+class CleanupTestCase(unittest.TestCase):
+    '''A wrapper for unittest.TestCase that includes cleanup operations'''
+    @classmethod
+    def setUpClass(cls):
+        import matplotlib.units
+        cls.original_units_registry = matplotlib.units.registry.copy()
+
+    @classmethod
+    def tearDownClass(cls):
+        plt.close('all')
+
+        matplotlib.tests.setup()
+
+        matplotlib.units.registry.clear()
+        matplotlib.units.registry.update(cls.original_units_registry)
+        warnings.resetwarnings()  # reset any warning filters set in tests
+
+
 def cleanup(func):
-    name = func.__name__
-    func = staticmethod(func)
-    func.__get__(1).__name__ = '_private'
-    new_class = type(
-        name,
-        (CleanupTest,),
-        {'_func': func})
-    return new_class
+    @functools.wraps(func)
+    def wrapped_function(*args, **kwargs):
+        original_units_registry = matplotlib.units.registry.copy()
+        try:
+            func(*args, **kwargs)
+        finally:
+            plt.close('all')
+
+            matplotlib.tests.setup()
+
+            matplotlib.units.registry.clear()
+            matplotlib.units.registry.update(original_units_registry)
+            warnings.resetwarnings() #reset any warning filters set in tests
+    return wrapped_function
+
 
 def check_freetype_version(ver):
     if ver is None:
         return True
 
     from distutils import version
-    if isinstance(ver, str):
+    if isinstance(ver, six.string_types):
         ver = (ver, ver)
     ver = [version.StrictVersion(x) for x in ver]
     found = version.StrictVersion(ft2font.__freetype_version__)
@@ -195,7 +232,7 @@ def image_comparison(baseline_images=None, extensions=None, tol=13,
 
         Otherwise, a list of extensions to test. For example ['png','pdf'].
 
-      *tol*: (default 1e-3)
+      *tol*: (default 13)
         The RMS threshold above which the test is considered failed.
 
       *freetype_version*: str or tuple
@@ -237,7 +274,7 @@ def image_comparison(baseline_images=None, extensions=None, tol=13,
         # well, outside of the context of our image comparison test
         # generator.
         func = staticmethod(func)
-        func.__get__(1).__name__ = '_private'
+        func.__get__(1).__name__ = str('_private')
         new_class = type(
             name,
             (ImageComparisonTest,),

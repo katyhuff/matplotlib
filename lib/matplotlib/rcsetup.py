@@ -85,13 +85,8 @@ def validate_bool(b):
 
 
 def validate_bool_maybe_none(b):
-<<<<<<< HEAD
-    """Convert b to a boolean, None, or raise"""
-    if isinstance(b, basestring):
-=======
     'Convert b to a boolean or raise'
     if isinstance(b, six.string_types):
->>>>>>> master
         b = b.lower()
     if b is None or b == 'none':
         return None
@@ -183,11 +178,7 @@ class validate_nseq_float:
 
     def __call__(self, s):
         """return a seq of n floats or raise"""
-<<<<<<< HEAD
-        if isinstance(s, basestring):
-=======
         if isinstance(s, six.string_types):
->>>>>>> master
             ss = s.split(',')
             if len(ss) != self.n:
                 raise ValueError(
@@ -210,11 +201,7 @@ class validate_nseq_int:
 
     def __call__(self, s):
         """return a seq of n ints or raise"""
-<<<<<<< HEAD
-        if isinstance(s, basestring):
-=======
         if isinstance(s, six.string_types):
->>>>>>> master
             ss = s.split(',')
             if len(ss) != self.n:
                 raise ValueError(
@@ -266,11 +253,7 @@ def validate_color(s):
 
 def validate_colorlist(s):
     'return a list of colorspecs'
-<<<<<<< HEAD
-    if isinstance(s, basestring):
-=======
     if isinstance(s, six.string_types):
->>>>>>> master
         return [validate_color(c.strip()) for c in s.split(',')]
     else:
         assert type(s) in [list, tuple]
@@ -287,19 +270,11 @@ def validate_string(s):
 
 def validate_stringlist(s):
     'return a list'
-<<<<<<< HEAD
-    if isinstance(s, basestring):
-        return [validate_string(v) for v in s.split(',')]
-    else:
-        assert type(s) in [list, tuple]
-        return [validate_string(v) for v in s]
-=======
     if isinstance(s, six.string_types):
         return [v.strip() for v in s.split(',')]
     else:
         assert type(s) in [list, tuple]
         return [six.text_type(v) for v in s]
->>>>>>> master
 
 
 validate_orientation = ValidateInStrings(
@@ -316,11 +291,7 @@ def validate_aspect(s):
 
 
 def validate_fontsize(s):
-<<<<<<< HEAD
-    if isinstance(s, basestring):
-=======
     if isinstance(s, six.string_types):
->>>>>>> master
         s = s.lower()
     if s in ['xx-small', 'x-small', 'small', 'medium', 'large', 'x-large',
              'xx-large', 'smaller', 'larger']:
@@ -373,11 +344,7 @@ validate_ps_papersize = ValidateInStrings(
 
 
 def validate_ps_distiller(s):
-<<<<<<< HEAD
-    if isinstance(s, basestring):
-=======
     if isinstance(s, six.string_types):
->>>>>>> master
         s = s.lower()
     if s in ('none', None):
         return None
@@ -466,11 +433,7 @@ validate_movie_frame_fmt = ValidateInStrings('animation.frame_format',
 validate_axis_locator = ValidateInStrings('major', ['minor','both','major'])
 
 def validate_bbox(s):
-<<<<<<< HEAD
-    if isinstance(s, basestring):
-=======
     if isinstance(s, six.string_types):
->>>>>>> master
         s = s.lower()
         if s == 'tight':
             return s
@@ -545,15 +508,9 @@ defaultParams = {
 
     # line props
     'lines.linewidth':       [1.0, validate_float],  # line width in points
-<<<<<<< HEAD
-    'lines.linestyle':       ['-', str],             # solid line
-    'lines.color':           ['blue', validate_color],  # b=blue
-    'lines.marker':          ['None', str],     # black
-=======
     'lines.linestyle':       ['-', six.text_type],             # solid line
     'lines.color':           ['b', validate_color],  # blue
     'lines.marker':          ['None', six.text_type],     # black
->>>>>>> master
     'lines.markeredgewidth': [0.5, validate_float],
     'lines.markersize':      [6, validate_float],    # markersize, in points
     'lines.antialiased':     [True, validate_bool],  # antialised (no jaggies)
@@ -570,19 +527,11 @@ defaultParams = {
 
 
     ## font props
-<<<<<<< HEAD
-    'font.family':     ['sans-serif', validate_string],  # used by text object
-    'font.style':      ['normal', validate_string],
-    'font.variant':    ['normal', validate_string],
-    'font.stretch':    ['normal', validate_string],
-    'font.weight':     ['normal', validate_string],
-=======
     'font.family':     ['sans-serif', validate_stringlist],  # used by text object
     'font.style':      ['normal', six.text_type],
     'font.variant':    ['normal', six.text_type],
     'font.stretch':    ['normal', six.text_type],
     'font.weight':     ['normal', six.text_type],
->>>>>>> master
     'font.size':       [12, validate_float],      # Base font size in points
     'font.serif':      [['Bitstream Vera Serif', 'DejaVu Serif',
                          'New Century Schoolbook', 'Century Schoolbook L',
@@ -650,13 +599,8 @@ defaultParams = {
                                                                 # axis locator
     'axes.labelsize':        ['medium', validate_fontsize],  # fontsize of the
                                                              # x any y labels
-<<<<<<< HEAD
-    'axes.labelweight':      ['normal', str],  # fontsize of the x any y labels
-    'axes.labelcolor':       ['black', validate_color],    # color of axis label
-=======
     'axes.labelweight':      ['normal', six.text_type],  # fontsize of the x any y labels
     'axes.labelcolor':       ['k', validate_color],    # color of axis label
->>>>>>> master
     'axes.formatter.limits': [[-7, 7], validate_nseq_int(2)],
                                # use scientific notation if log10
                                # of the axis range is smaller than the
@@ -742,13 +686,8 @@ defaultParams = {
     'ytick.labelsize':   ['medium', validate_fontsize],
     'ytick.direction':   ['in', six.text_type],            # direction of yticks
 
-<<<<<<< HEAD
-    'grid.color':        ['black', validate_color],       # grid color
-    'grid.linestyle':    [':', str],       # dotted
-=======
     'grid.color':        ['k', validate_color],       # grid color
     'grid.linestyle':    [':', six.text_type],       # dotted
->>>>>>> master
     'grid.linewidth':    [0.5, validate_float],     # in points
     'grid.alpha':        [1.0, validate_float],
 
@@ -856,53 +795,29 @@ defaultParams = {
     'keymap.all_axes':     [['a'], validate_stringlist],
 
     # sample data
-<<<<<<< HEAD
-    'examples.directory': ['', validate_string],
-
-    # Animation settings
-    'animation.writer':       ['ffmpeg', validate_movie_writer],
-    'animation.codec':        ['mpeg4', validate_string],
-=======
     'examples.directory': ['', six.text_type],
 
     # Animation settings
     'animation.writer':       ['ffmpeg', validate_movie_writer],
     'animation.codec':        ['mpeg4', six.text_type],
->>>>>>> master
     'animation.bitrate':      [-1, validate_int],
     # Controls image format when frames are written to disk
     'animation.frame_format': ['png', validate_movie_frame_fmt],
     # Path to FFMPEG binary. If just binary name, subprocess uses $PATH.
-<<<<<<< HEAD
-    'animation.ffmpeg_path':  ['ffmpeg', validate_string],
-=======
     'animation.ffmpeg_path':  ['ffmpeg', six.text_type],
->>>>>>> master
 
     ## Additional arguments for ffmpeg movie writer (using pipes)
     'animation.ffmpeg_args':   [[''], validate_stringlist],
     # Path to AVConv binary. If just binary name, subprocess uses $PATH.
-<<<<<<< HEAD
-    'animation.avconv_path':   ['avconv', validate_string],
-=======
     'animation.avconv_path':   ['avconv', six.text_type],
->>>>>>> master
     # Additional arguments for avconv movie writer (using pipes)
     'animation.avconv_args':   [[''], validate_stringlist],
     # Path to MENCODER binary. If just binary name, subprocess uses $PATH.
-<<<<<<< HEAD
-    'animation.mencoder_path': ['mencoder', validate_string],
-=======
     'animation.mencoder_path': ['mencoder', six.text_type],
->>>>>>> master
     # Additional arguments for mencoder movie writer (using pipes)
     'animation.mencoder_args': [[''], validate_stringlist],
      # Path to convert binary. If just binary name, subprocess uses $PATH
-<<<<<<< HEAD
-    'animation.convert_path':  ['convert', validate_string],
-=======
     'animation.convert_path':  ['convert', six.text_type],
->>>>>>> master
      # Additional arguments for mencoder movie writer (using pipes)
     'animation.convert_args':  [[''], validate_stringlist]}
 
